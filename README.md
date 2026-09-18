@@ -2,56 +2,120 @@
 
 > *The drone was the starting point of Aerodava. Accessible healthcare is now the bigger idea.*
 
-Aerodava is a layered healthcare-access platform designed to seamlessly connect patients, AI assistance, clinical professionals, and emergency logistics into one continuous flow of care.
+Aerodava is a layered healthcare-access platform that connects patients, AI assistance, clinical professionals, and emergency logistics into one continuous flow of care — with drones repositioned as an **emergency-only logistics layer** rather than a routine delivery mechanism.
 
 ---
 
-## The Aerodava Journey
+## 🩺 Problem
 
-Aerodava began in February 2026 during **HackFusion 2026**, where we explored the problem of healthcare accessibility in rural and hard-to-reach regions. Our initial approach was a smart drone-based system solely focused on delivering medical supplies to areas where conventional access was difficult. Although we did not qualify for the next round, the idea stayed with me.
+Rural and hard-to-reach regions face two overlapping issues:
+- Physical access to healthcare/medicine breaks down during disasters or infrastructure failure
+- Even with access, patients often can't understand prescriptions, reports, or when a symptom needs urgent attention
 
-Later that month, I continued developing the same core idea independently for an **international ideathon by CareerPrep Tech**, where Aerodava secured **15th place**. Working on it further made me look beyond the drone itself and question how practical a drone-first healthcare model would be at scale. When considering factors such as cost, maintenance, weather, damage or theft, alongside massive operational and regulatory challenges, a purely drone-based solution was not sustainable for everyday healthcare.
-
-That realization led to the current, much larger evolution of Aerodava for **Hack2Heal 2026**.
-
-## The Evolution
-
-Instead of making drones the center of the system, I repositioned them as an **emergency logistics layer**—a fail-safe activated only for situations such as floods, infrastructure failures, or disasters where conventional transportation becomes impossible. 
-
-The main focus of Aerodava is now **healthcare access and communication**. The original idea of connecting people to physical healthcare has expanded into a broader digital platform covering *understanding, communication, consultation, continuity, and emergency response.*
+Aerodava addresses both: everyday healthcare access + communication, with hardware (drones) reserved strictly for scenarios where conventional transport fails.
 
 ---
 
-## Features & Significant Changes
-
-The platform has been entirely rebuilt to connect the different stages of care into one unified workflow:
+## ✨ Features
 
 ### 1. AI Medical Copilot
-- **Symptom Guidance:** Provides conservative, first-step guidance and symptom structuring, ensuring clinical decisions remain strictly with healthcare professionals.
-- **Document Understanding:** AI parses complex medical reports and prescriptions, explaining them in simpler, jargon-free language while offering safe, supportive home remedies.
+- **Symptom Guidance:** Conservative, first-step guidance with red-flag detection; clinical decisions stay strictly with doctors, not the AI
+- **Document Understanding:** Parses prescriptions/reports and explains them in plain language, with safe supportive suggestions
 
 ### 2. Connected Clinical Consultation
-- **Digital Health Portfolio:** Patients maintain a structured, persistent digital health portfolio containing their medical history, uploaded reports, and past prescriptions.
-- **Doctor Console:** When a patient is escalated to a doctor, the AI generates a concise clinical brief, saving time and allowing the doctor to rapidly review the case and issue a structured Care Plan.
+- **Digital Health Portfolio:** Persistent record of medical history, reports, and past prescriptions
+- **Doctor Console:** AI generates a concise clinical brief on escalation so doctors can review fast and issue a structured Care Plan
 
 ### 3. Automated Pharmacy Workflow
-- Seamless continuity of care: Once a patient receives a doctor-approved care plan or prescription, they can use that prescription to automatically populate their medicine-access cart in the pharmacy workflow.
-- Features primitive medicine availability and targeted combo packs (e.g., First Aid, Cold & Flu).
+- Doctor-approved prescriptions auto-populate a medicine-access cart
+- Includes medicine availability checks and pre-built combo packs (First Aid, Cold & Flu, etc.)
 
 ### 4. Resilient Emergency Infrastructure
-- **Disaster Logistics:** When conventional supply chains are blocked, the platform can trigger emergency mass-orders and autonomous drone dispatches to remote health centers.
-- **Human Mesh Network:** (Simulation) An offline Bluetooth relay protocol that ensures critical health alerts can reach an internet-connected node even during complete infrastructure blackouts.
+- **Disaster Logistics:** Triggers emergency mass-orders and drone dispatch to remote health centers when normal supply chains are blocked
+- **Human Mesh Network (simulated):** Offline Bluetooth relay protocol that moves critical health alerts toward an internet-connected node during full connectivity blackouts
 
 ---
 
-## 🛠️ Tech Stack & Local Setup
+## 🏗️ Architecture
 
-This prototype was built for Hack2Heal 2026 using:
-- **Frontend:** Next.js 14 (App Router), React, Tailwind CSS, shadcn/ui
-- **Data/Backend:** Fully mocked local data layer for guaranteed 100% reliability during live hackathon demonstrations.
+```mermaid
+flowchart LR
+    P[👤 Patient]
 
-**To run the project locally:**
+    subgraph AI["AI Assistance Layer"]
+        A[🤖 AI Medical Copilot]
+        R{Risk Escalation}
+        A --> R
+    end
+
+    subgraph Clinical["Clinical Layer"]
+        D[🩺 Doctor Console]
+        C[📋 Care Plan]
+        Rx[💊 Prescription]
+        D --> C --> Rx
+    end
+
+    subgraph Access["Medicine Access Layer"]
+        Ph[🏥 Pharmacy Workflow]
+        M[📦 Medicine Access]
+        Ph --> M
+    end
+
+    subgraph Emergency["🚨 Emergency Infrastructure"]
+        HM[📡 Human Mesh Network]
+        DR[🚁 Drone Logistics]
+        RC[🏥 Remote Health Center]
+        HM --> RC
+        DR --> RC
+    end
+
+    subgraph Data["Supporting Services"]
+        DH[(📚 Digital Health Portfolio)]
+        AIS[(⚙️ AI Service Layer)]
+        API[(🗄️ Mock Data / API Service)]
+    end
+
+    P --> A
+    R -->|Clinical Review| D
+    D --> Rx
+    Rx --> Ph
+
+    R -.->|Disaster / Connectivity Failure| Emergency
+
+    DH <--> D
+    DH <--> A
+    AIS -.-> A
+    API -.-> Ph
+    API -.-> DH
+
+    RC --> M
+```
+
+- AI functionality is isolated behind a service layer (`aiService.ts`) so the current simulated logic can be swapped for a real model/API without touching the frontend
+- Data layer is fully mocked (`demo-data.ts` + async `apiService.ts`) for 100% reliable live demos — no dependency on external APIs, DB uptime, or network conditions
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 14 (App Router), React 18, TypeScript
+- **UI:** Tailwind CSS, shadcn/ui, Lucide icons — custom healthcare color palette
+- **Data/Backend:** Client-side mock architecture — seeded data + simulated async service layer (mimics real network/DB latency)
+
+---
+
+## 🚀 Local Setup
+
 1. Clone the repository
 2. Run `npm install`
 3. Run `npm run dev`
-4. Open `http://localhost:3000` in your browser.
+4. Open `http://localhost:3000` in your browser
+
+---
+
+## 🔭 What's Next
+
+- Real hospital, pharmacy, and doctor integrations
+- Replace simulated AI with production/domain-specific models
+- Extend Human Mesh for real disaster-scale connectivity
+- Field validation with hospitals and rural users
